@@ -7,7 +7,7 @@ DB_PASSWORD="password"
 DB_HOST="localhost"
 
 # Creating backup
-create_backup()
+backup()
 {
   # Creating directory for storing backups
   mkdir -p ~/mysqlbackup/backups
@@ -26,8 +26,8 @@ create_backup()
   echo "Created backup of ${DB_DATABASE} on ${DATESTAMP} as ${FILE_NAME}.gz"
 }
 
-# Creating cronjob
-create_cronjob()
+# Scheduling daily backup
+schedule()
 {
   # Creating directory for storing automation script
   mkdir -p ~/mysqlbackup/bin
@@ -40,19 +40,20 @@ create_cronjob()
   if ! crontab -l | grep -q '~/mysqlbackup/bin/automate backup'
   then
   crontab -l | { cat; echo "0 1 * * * ~/mysqlbackup/bin/automate backup >> ~/mysqlbackup/backup.log 2>&1"; } | crontab -
+  echo "Installed automation script and scheduled to run daily at 1 AM"
   fi
 }
 
 case "$1" in
   backup)
-    create_backup
+    backup
   ;;
-  automate)
-    create_cronjob
+  schedule)
+    schedule
   ;;
   *)
   echo "Usage: $0 [options]"
   echo "$0 backup    Manually run a MySQL backup"
-  echo "$0 automate  Schedule MySQL backup every day at 1 AM"
+  echo "$0 schedule  Schedule MySQL backup daily at 1 AM"
   ;;
 esac
