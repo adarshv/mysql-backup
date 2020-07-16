@@ -37,7 +37,10 @@ create_cronjob()
   ln -f $SCRIPTPATH ~/mysqlbackup/bin/automate
   
   # Creating cronjob to run mysql backup everyday at 1 AM
+  if ! crontab -l | grep -q '~/mysqlbackup/bin/automate backup'
+  then
   crontab -l | { cat; echo "0 1 * * * ~/mysqlbackup/bin/automate backup >> ~/mysqlbackup/backup.log 2>&1"; } | crontab -
+  fi
 }
 
 case "$1" in
